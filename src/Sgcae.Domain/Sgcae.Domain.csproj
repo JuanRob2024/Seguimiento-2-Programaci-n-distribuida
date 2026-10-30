@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    EN: This is the Domain layer. It has no dependencies on other projects or external packages.
+    ES: Esta es la capa de Dominio. No depende de otros proyectos ni de paquetes externos.
+  -->
+</Project>

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!--
+    EN: This is the Presentation layer: the ASP.NET Core Web API. It is also the composition root,
+        where all the layers are wired together.
+    ES: Esta es la capa de Presentación: la ASP.NET Core Web API. También es la raíz de composición,
+        donde se conectan todas las capas.
+  -->
+  <PropertyGroup>
+    <!-- EN: I generate the XML documentation so Swagger shows the endpoint descriptions. -->
+    <!-- ES: Genero la documentación XML para que Swagger muestre las descripciones de los endpoints. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sgcae.Application\Sgcae.Application.csproj" />
+    <ProjectReference Include="..\Sgcae.Infrastructure\Sgcae.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

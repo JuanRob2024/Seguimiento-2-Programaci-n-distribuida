@@ -1,0 +1,16 @@
+# EN: Optional: SQL Server 2022 in Docker, for those who do not have LocalDB / SQL Server installed.
+# ES: Opcional: SQL Server 2022 en Docker, para quien no tenga LocalDB / SQL Server instalado.
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sgcae-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Sgcae_Passw0rd!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sgcae-data:/var/opt/mssql
+
+volumes:
+  sgcae-data:

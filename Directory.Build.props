@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    EN: Here I centralize the build settings shared by every project in the solution.
+    ES: Aquí centralizo la configuración de compilación compartida por todos los proyectos de la solución.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Authors>Juan Pablo Robledo Urrego</Authors>
+    <Product>SGCAE - Employee Access Management and Control System</Product>
+  </PropertyGroup>
+</Project>

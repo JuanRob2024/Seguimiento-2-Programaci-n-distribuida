@@ -1,0 +1,163 @@
+# =====================================================================================
+# EN: Requests to test the whole flow of the API from Visual Studio / VS Code (REST Client).
+#     Replace the ids ({{employeeId}}, {{credentialId}}...) with the values returned by the API.
+# ES: Peticiones para probar todo el flujo de la API desde Visual Studio / VS Code (REST Client).
+#     Reemplace los ids ({{employeeId}}, {{credentialId}}...) con los valores que retorna la API.
+# =====================================================================================
+
+@baseUrl = http://localhost:5080
+@employeeId = 00000000-0000-0000-0000-000000000000
+@credentialId = 00000000-0000-0000-0000-000000000000
+@accessPointId = 00000000-0000-0000-0000-000000000000
+
+### EN: 1. List the enabled access points (created automatically at startup)
+### ES: 1. Listar los puntos de acceso habilitados (se crean automáticamente al iniciar)
+GET {{baseUrl}}/api/access-points?isEnabled=true
+
+### EN: 2. Register an access point / ES: 2. Registrar un punto de acceso
+POST {{baseUrl}}/api/access-points
+Content-Type: application/json
+
+{
+  "code": "WAREHOUSE-02",
+  "name": "Cold storage warehouse",
+  "type": "Warehouse",
+  "description": "Refrigerated products"
+}
+
+### EN: 3. Register an employee / ES: 3. Registrar un empleado
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "documentNumber": "1037654321",
+  "firstNames": "Juan Pablo",
+  "lastNames": "Robledo Urrego",
+  "email": "juan.robledo@example.com",
+  "position": "Logistics analyst",
+  "area": "Logistics"
+}
+
+### EN: 4. Duplicated document -> 409 Conflict / ES: 4. Documento duplicado -> 409 Conflict
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "documentNumber": "1037654321",
+  "firstNames": "Other",
+  "lastNames": "Person",
+  "email": "other@example.com",
+  "position": "Driver",
+  "area": "Logistics"
+}
+
+### EN: 5. List employees (paginated) / ES: 5. Listar empleados (paginado)
+GET {{baseUrl}}/api/employees?status=Active&page=1&pageSize=10
+
+### EN: 6. Update the employee / ES: 6. Actualizar el empleado
+PUT {{baseUrl}}/api/employees/{{employeeId}}
+Content-Type: application/json
+
+{
+  "firstNames": "Juan Pablo",
+  "lastNames": "Robledo Urrego",
+  "email": "juan.robledo@example.com",
+  "position": "Logistics coordinator",
+  "area": "Logistics"
+}
+
+### EN: 7. Assign a credential / ES: 7. Asignar una credencial
+POST {{baseUrl}}/api/credentials
+Content-Type: application/json
+
+{
+  "employeeId": "{{employeeId}}",
+  "code": "CRD-JPRU0001",
+  "expiresAtUtc": null
+}
+
+### EN: 8. Check the credential status by code / ES: 8. Consultar el estado de la credencial por código
+GET {{baseUrl}}/api/credentials/code/CRD-JPRU0001
+
+### EN: 9. ENTRY at the reception -> Granted / ES: 9. ENTRADA por recepción -> Autorizada
+POST {{baseUrl}}/api/access-requests
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-JPRU0001",
+  "accessPointCode": "RECEPTION-01",
+  "movement": "Entry"
+}
+
+### EN: 10. Second ENTRY without exit -> Denied (AlreadyInside) / ES: 10. Segunda ENTRADA sin salida -> Rechazada (AlreadyInside)
+POST {{baseUrl}}/api/access-requests
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-JPRU0001",
+  "accessPointCode": "RECEPTION-01",
+  "movement": "Entry"
+}
+
+### EN: 11. EXIT -> Granted / ES: 11. SALIDA -> Autorizada
+POST {{baseUrl}}/api/access-requests
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-JPRU0001",
+  "accessPointCode": "RECEPTION-01",
+  "movement": "Exit"
+}
+
+### EN: 12. Unknown credential -> Denied (CredentialNotFound) / ES: 12. Credencial inexistente -> Rechazada (CredentialNotFound)
+POST {{baseUrl}}/api/access-requests
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-UNKNOWN99",
+  "accessPointCode": "RECEPTION-01",
+  "movement": "Entry"
+}
+
+### EN: 13. Block the credential / ES: 13. Bloquear la credencial
+PATCH {{baseUrl}}/api/credentials/{{credentialId}}/block
+Content-Type: application/json
+
+{
+  "reason": "Card reported as lost"
+}
+
+### EN: 14. Access with blocked credential -> Denied (CredentialBlocked) / ES: 14. Acceso con credencial bloqueada -> Rechazado (CredentialBlocked)
+POST {{baseUrl}}/api/access-requests
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-JPRU0001",
+  "accessPointCode": "RECEPTION-01",
+  "movement": "Entry"
+}
+
+### EN: 15. Unblock the credential / ES: 15. Desbloquear la credencial
+PATCH {{baseUrl}}/api/credentials/{{credentialId}}/unblock
+
+### EN: 16. Disable an access point / ES: 16. Deshabilitar un punto de acceso
+PATCH {{baseUrl}}/api/access-points/{{accessPointId}}/disable
+
+### EN: 17. Access history (all filters are optional) / ES: 17. Historial de accesos (todos los filtros son opcionales)
+GET {{baseUrl}}/api/access-logs?employeeId={{employeeId}}&page=1&pageSize=20
+
+### EN: 18. Only denied attempts in a date range / ES: 18. Solo intentos rechazados en un rango de fechas
+GET {{baseUrl}}/api/access-logs?result=Denied&fromUtc=2026-01-01T00:00:00Z&toUtc=2026-12-31T23:59:59Z
+
+### EN: 19. Deactivate the employee (also revokes the credentials) / ES: 19. Desactivar el empleado (también revoca las credenciales)
+PATCH {{baseUrl}}/api/employees/{{employeeId}}/deactivate
+
+### EN: 20. Access after deactivation -> Denied (CredentialRevoked) / ES: 20. Acceso después de desactivar -> Rechazado (CredentialRevoked)
+POST {{baseUrl}}/api/access-requests
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-JPRU0001",
+  "accessPointCode": "RECEPTION-01",
+  "movement": "Entry"
+}

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    EN: This is the Application layer: use cases (commands and queries). It only depends on the Domain.
+    ES: Esta es la capa de Aplicación: casos de uso (comandos y consultas). Solo depende del Dominio.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Sgcae.Domain\Sgcae.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+</Project>
